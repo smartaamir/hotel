@@ -1,0 +1,19 @@
+{
+  "name": "aurastay-workspace",
+  "version": "1.0.0",
+  "description": "AuraStay Luxury Hotel Management Workspace",
+  "private": true,
+  "scripts": {
+    "setup": "npm install && cd server && npm install && cd ../client && npm install",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "cd server && npm run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.13.5"
+  }
+}

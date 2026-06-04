@@ -1,0 +1,86 @@
+/* Physical Room Matrix Grid Styles - AuraStay */
+
+.room-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.room-box {
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.room-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* Background Color Codings based on Room Cleanliness / Stay states */
+.room-vacant {
+  background: linear-gradient(135deg, #0f5132 0%, #198754 100%);
+  border-color: rgba(25, 135, 84, 0.3);
+}
+
+.room-occupied {
+  background: linear-gradient(135deg, #842029 0%, #dc3545 100%);
+  border-color: rgba(220, 53, 69, 0.3);
+}
+
+.room-cleaning {
+  background: linear-gradient(135deg, #664d03 0%, #ffc107 100%);
+  border-color: rgba(255, 193, 7, 0.3);
+  color: #000 !important;
+}
+.room-cleaning select {
+  color: #000 !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+.room-cleaning .room-typeMini {
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+.room-cleaning .roomNoText {
+  color: #000 !important;
+}
+
+.room-maintenance {
+  background: linear-gradient(135deg, #334155 0%, #64748b 100%);
+  border-color: rgba(100, 116, 139, 0.3);
+}
+
+/* Status selection drop-down indicator on room hover */
+.room-status-select {
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.7rem;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: var(--transition);
+  outline: none;
+}
+
+.room-status-select option {
+  background: #111827;
+  color: #fff;
+}
+
+.room-status-select:focus {
+  border-color: var(--gold);
+}
