@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock } from 'lucide-react';
 import '../styles/auth.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 // Client-side JWT Decoder Helper
 const decodeJwt = (token) => {
@@ -31,6 +32,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Google OAuth Auto-Registration and Real Integration States
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
@@ -60,35 +62,87 @@ const Login = () => {
       setError(result.error || 'Google auth handshake failed.');
     }
   };
+useEffect(() => {
+  // Agar script pehle se mojood hai toh dobara load na karein
+  if (document.getElementById('google-script')) return;
 
-  useEffect(() => {
-    // Dynamic integration of the Google Identity Services SDK
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      if (window.google) {
-        window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '109283019283-abcdef.apps.googleusercontent.com',
-          callback: handleCredentialResponse
-        });
+  const script = document.createElement('script');
+  script.src = 'https://accounts.google.com/gsi/client';
+  script.id = 'google-script';
+  script.async = true;
+  script.defer = true;
+  
+  script.onload = () => {
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleCredentialResponse
+      });
+      
+      // Button Render karein
+      window.google.accounts.id.renderButton(
+  document.getElementById('google-signin-btn-container'),
+  { 
+    theme: 'filled_black', 
+    size: 'large', 
+    width: Math.min(380, window.innerWidth - 80).toString(), // <--- Yeh formula use karein
+    shape: 'pill',
+    text: 'signin_with'
+  }
+);
+
+      // Resize hone par dobara render karne ka code
+      const handleResize = () => {
         window.google.accounts.id.renderButton(
           document.getElementById('google-signin-btn-container'),
-          { theme: 'outline', size: 'large', width: Math.min(380, window.innerWidth - 80).toString(), shape: 'pill' }
+          { 
+            theme: 'filled_black', 
+            size: 'large', 
+            width: '100%', 
+            shape: 'pill',
+            text: 'signin_with'
+          }
         );
-      }
-    };
-    document.head.appendChild(script);
+      };
+      window.addEventListener('resize', handleResize);
+    }
+  };
+  
+  document.head.appendChild(script);
 
-    return () => {
-      try {
-        document.head.removeChild(script);
-      } catch (e) {
-        // Safe check in case component unmounts after script loads
-      }
-    };
-  }, []);
+  // Cleanup function
+  return () => {
+    // Script ko remove na karein taake dobara load na ho
+  };
+}, []);
+  // useEffect(() => {
+  //   // Dynamic integration of the Google Identity Services SDK
+  //   const script = document.createElement('script');
+  //   script.src = 'https://accounts.google.com/gsi/client';
+  //   script.async = true;
+  //   script.defer = true;
+  //   script.onload = () => {
+  //     if (window.google) {
+  //       window.google.accounts.id.initialize({
+  //         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '109283019283-abcdef.apps.googleusercontent.com',
+  //         callback: handleCredentialResponse
+  //       });
+  //       window.google.accounts.id.renderButton(
+  //         document.getElementById('google-signin-btn-container'),
+  //         { theme: 'outline', size: 'large', width: Math.min(380, window.innerWidth - 80).toString(), shape: 'pill' }
+  //       );
+  //     }
+  //   };
+  //   document.head.appendChild(script);
+
+  //   return () => {
+  //     try {
+  //       document.head.removeChild(script);
+  //     } catch (e) {
+  //       // Safe check in case component unmounts after script loads
+  //     }
+  //   };
+  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -148,21 +202,43 @@ const Login = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div style={{ position: 'relative' }}>
-              <Lock size={16} style={styles.inputIcon} />
-              <input
-                id="password"
-                type="password"
-                className="form-control"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ paddingLeft: '40px' }}
-                required
-              />
-            </div>
-          </div>
+  <label htmlFor="password">Password</label>
+  <div style={{ position: 'relative' }}>
+    
+    {/* Lock Icon (Left Side) */}
+    <Lock size={16} style={styles.inputIcon} />
+    
+    {/* Password Input */}
+    <input
+      id="password"
+      type={showPassword ? "text" : "password"}
+      className="form-control"
+      placeholder="••••••••"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      style={{ paddingLeft: '40px', paddingRight: '40px' }} // Right side padding barha di taake text icon ke neeche na aaye
+      required 
+    />
+    
+    {/* Eye Icon (Right Side) */}
+    <div 
+      onClick={() => setShowPassword(!showPassword)} 
+      style={{
+        position: 'absolute',
+        right: '15px',      // Right side se 15px ka gap
+        top: '50%',         // Top se 50% (center)
+        transform: 'translateY(-50%)', // Perfect center karne ke liye
+        cursor: 'pointer',
+        color: '#888',      // Icon ka color (aap apni theme ke hisaab se change kar sakte hain)
+        display: 'flex',
+        alignItems: 'center'
+      }}
+    >
+      {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+    </div>
+
+  </div>
+</div>
 
           <button type="submit" className="btn-gold btn-auth-submit" disabled={submitting}>
             {submitting ? 'Authenticating...' : 'Sign In'}
